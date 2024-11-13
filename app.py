@@ -133,8 +133,8 @@ def query_stock():
             'name': stock_name,
             'industry': industry or '未知行业',
             'market': stock_info['market'].iloc[0],
-            'list_date': stock_info['list_date'].iloc[0],
-            'fullname': stock_info['fullname'].iloc[0],
+            'list_date': stock_info['list_date'].iloc[0] if 'list_date' in stock_info else '未知',
+            'fullname': stock_info['fullname'].iloc[0] if 'fullname' in stock_info else stock_name,
             'chairman': company_info['chairman'].iloc[0] if not company_info.empty else '未知',
             'introduction': company_info['introduction'].iloc[0] if not company_info.empty else '暂无简介',
             'main_business': company_info['main_business'].iloc[0] if not company_info.empty else '暂无信息',
@@ -180,3 +180,6 @@ if __name__ == '__main__':
 else:
     # Vercel部署时使用
     app = app
+
+# 只导入需要的模块
+pd.options.mode.chained_assignment = None  # 关闭警告

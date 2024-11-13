@@ -291,4 +291,105 @@ function updateTheme(theme) {
             }
         });
     }
+}
+
+// 添加更新公司信息的函数
+function updateCompanyInfo(stockInfo) {
+    document.getElementById('fullname').textContent = `公司全称：${stockInfo.fullname}`;
+    document.getElementById('industry').textContent = `所属行业：${stockInfo.industry}`;
+    document.getElementById('listDate').textContent = `上市日期：${stockInfo.list_date}`;
+    document.getElementById('chairman').textContent = `董事长：${stockInfo.chairman}`;
+    document.getElementById('mainBusiness').textContent = stockInfo.main_business;
+    document.getElementById('introduction').textContent = stockInfo.introduction;
+}
+
+// 添加初始化图表的函数
+function initializeCharts(data) {
+    // 初始化股价图表
+    const priceChart = echarts.init(document.getElementById('priceChart'));
+    charts.push(priceChart);
+    
+    const priceOption = {
+        title: { text: '股价走势', textStyle: { color: '#fff' } },
+        tooltip: {
+            trigger: 'axis',
+            axisPointer: { type: 'cross' }
+        },
+        legend: {
+            data: ['日K', '成交量'],
+            textStyle: { color: '#fff' }
+        },
+        grid: { left: '10%', right: '10%' },
+        xAxis: {
+            type: 'category',
+            data: data.price_data.dates,
+            axisLabel: { color: '#fff' }
+        },
+        yAxis: [
+            {
+                type: 'value',
+                name: '价格',
+                axisLabel: {
+                    color: '#fff',
+                    formatter: '{value} 元'
+                }
+            },
+            {
+                type: 'value',
+                name: '成交量',
+                axisLabel: {
+                    color: '#fff',
+                    formatter: '{value} 手'
+                }
+            }
+        ],
+        series: [
+            {
+                name: '日K',
+                type: 'candlestick',
+                data: data.price_data.dates.map((_, i) => [
+                    data.price_data.open[i],
+                    data.price_data.close[i],
+                    data.price_data.low[i],
+                    data.price_data.high[i]
+                ])
+            },
+            {
+                name: '成交量',
+                type: 'bar',
+                yAxisIndex: 1,
+                data: data.price_data.vol.map(vol => vol / 100)
+            }
+        ]
+    };
+    priceChart.setOption(priceOption);
+
+    // 初始化其他图表
+    const peChart = initChart('peChart', '市盈率(PE)走势');
+    const pbChart = initChart('pbChart', '市净率(PB)走势');
+    const dvChart = initChart('dvChart', '股息率(%)走势');
+    const mvChart = initChart('cfChart', '总市值(亿元)走势');
+
+    charts.push(peChart, pbChart, dvChart, mvChart);
+
+    // 更新其他图表数据
+    peChart.setOption({
+        xAxis: { data: data.dates },
+        series: [{ data: data.pe }]
+    });
+
+    pbChart.setOption({
+        xAxis: { data: data.dates },
+        series: [{ data: data.pb }]
+    });
+
+    dvChart.setOption({
+        xAxis: { data: data.dates },
+        series: [{ data: data.dv_ratio }]
+    });
+
+    mvChart.setOption({
+        xAxis: { data: data.dates },
+        series: [{ data: data.total_mv }]
+    });
 } 
