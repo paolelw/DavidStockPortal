@@ -3,8 +3,23 @@ import tushare as ts
 import pandas as pd
 from datetime import datetime, timedelta
 import os
+import sys
+import logging
 
 app = Flask(__name__)
+
+# 配置日志
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
+
+# 在app初始化后添加错误处理
+@app.errorhandler(Exception)
+def handle_exception(e):
+    logger.error(f"Unhandled exception: {str(e)}", exc_info=True)
+    return jsonify({
+        "success": False,
+        "error": "服务器内部错误，请稍后重试"
+    }), 500
 
 # 从环境变量获取Tushare API token
 TUSHARE_TOKEN = os.getenv('TUSHARE_TOKEN', '68babfef29946cefbb30be591fef6e3c274637639d31644be740d81f')
@@ -92,12 +107,13 @@ def index():
 
 @app.route('/query_stock', methods=['POST'])
 def query_stock():
-    stock_code = request.json.get('stock_code')
-    
-    if not stock_code:
-        return jsonify({'success': False, 'error': '股票代码不能为空'})
-    
     try:
+        stock_code = request.json.get('stock_code')
+        logger.info(f"Querying stock: {stock_code}")
+        
+        if not stock_code:
+            return jsonify({'success': False, 'error': '股票代码不能为空'})
+        
         # 计算一年前的日期
         end_date = datetime.now()
         start_date = (end_date - timedelta(days=365)).strftime('%Y%m%d')
@@ -172,6 +188,7 @@ def query_stock():
         
         return jsonify({'success': True, 'data': data})
     except Exception as e:
+        logger.error(f"Error querying stock {stock_code}: {str(e)}", exc_info=True)
         return jsonify({'success': False, 'error': f'查询失败：{str(e)}'})
 
 if __name__ == '__main__':

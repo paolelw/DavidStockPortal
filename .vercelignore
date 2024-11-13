@@ -7,4 +7,12 @@ venv/
 ENV/
 *.log
 .DS_Store
-node_modules/ 
+node_modules/
+.git
+.gitignore
+README.md
+*.pytest_cache
+*.coverage
+*.egg-info
+dist/
+build/ 
