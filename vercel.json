@@ -1,32 +1,19 @@
 {
     "version": 2,
-    "builds": [
-        {
-            "src": "app.py",
-            "use": "@vercel/python",
-            "config": {
-                "maxLambdaSize": "15mb",
-                "runtime": "python3.11",
-                "buildCommand": "pip install --no-cache-dir --upgrade pip && pip install --no-cache-dir -r requirements.txt"
-            }
+    "functions": {
+        "api/*.py": {
+            "runtime": "python3.9",
+            "memory": 1024,
+            "maxDuration": 10
         }
-    ],
+    },
     "routes": [
-        {
-            "src": "/static/(.*)",
-            "dest": "/static/$1",
-            "headers": {
-                "cache-control": "public, max-age=31536000, immutable"
-            }
-        },
-        {
-            "src": "/(.*)",
-            "dest": "app.py"
-        }
+        { "src": "/api/(.*)", "dest": "/api/index.py" },
+        { "src": "/static/(.*)", "dest": "/static/$1", "headers": { "cache-control": "public, max-age=31536000, immutable" } },
+        { "src": "/(.*)", "dest": "/index.html" }
     ],
     "env": {
         "PYTHONPATH": ".",
-        "PIP_NO_CACHE_DIR": "1",
-        "PIP_DISABLE_PIP_VERSION_CHECK": "1"
+        "PIP_NO_CACHE_DIR": "1"
     }
 } 

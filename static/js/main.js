@@ -106,7 +106,7 @@ async function queryStock() {
     button.innerHTML = '<span class="loading-spinner"></span> 加载中...';
 
     try {
-        const response = await fetch('/query_stock', {
+        const response = await fetch('/api/query_stock', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
