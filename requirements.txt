@@ -1,6 +1,7 @@
 flask==2.0.1
 tushare==1.2.89
 pandas==1.2.4
-numpy==1.20.3
+numpy==1.20.3; platform_machine != 'aarch64'
+numpy==1.19.5; platform_machine == 'aarch64'
 python-dotenv==0.19.0
 werkzeug==2.0.3
