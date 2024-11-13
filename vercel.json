@@ -1,16 +1,31 @@
 {
     "version": 2,
-    "functions": {
-        "api/*.py": {
-            "runtime": "python3.9",
-            "memory": 1024,
-            "maxDuration": 10
+    "builds": [
+        {
+            "src": "api/index.py",
+            "use": "@vercel/python@3.1.0"
+        },
+        {
+            "src": "static/**",
+            "use": "@vercel/static"
         }
-    },
+    ],
     "routes": [
-        { "src": "/api/(.*)", "dest": "/api/index.py" },
-        { "src": "/static/(.*)", "dest": "/static/$1", "headers": { "cache-control": "public, max-age=31536000, immutable" } },
-        { "src": "/(.*)", "dest": "/index.html" }
+        {
+            "src": "/static/(.*)",
+            "dest": "/static/$1",
+            "headers": {
+                "cache-control": "public, max-age=31536000, immutable"
+            }
+        },
+        {
+            "src": "/api/(.*)",
+            "dest": "/api/index.py"
+        },
+        {
+            "src": "/(.*)",
+            "dest": "/index.html"
+        }
     ],
     "env": {
         "PYTHONPATH": ".",
